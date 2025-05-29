@@ -2,6 +2,7 @@ import { Router } from "express";
 import upload from "../utils/multer.util";
 import { AadharController } from "../controllers/implementation/aadhar.controller";
 import { AadharServices } from "../services/implementation/aadhar.service";
+import { validateImages } from "../middlewares/images-validation.middleware";
 
 const aadharRouter = Router();
 
@@ -14,6 +15,7 @@ aadharRouter.post(
     { name: "frontImage", maxCount: 1 },
     { name: "backImage", maxCount: 1 },
   ]),
+  validateImages,
   aadharController.parseAadhar.bind(aadharController)
 );
 

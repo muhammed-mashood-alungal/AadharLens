@@ -6,6 +6,8 @@ declare global {
       files?: {
         [fieldname: string]: multer.File[];
       };
+      frontImageBuffer?: Buffer;
+      backImageBuffer?: Buffer;
     }
   }
 }
