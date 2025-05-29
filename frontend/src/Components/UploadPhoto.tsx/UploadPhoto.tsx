@@ -3,6 +3,8 @@ import type { UploadComponentProps } from "../../Types/upload-image.types";
 import { useState } from "react";
 import { validateImage } from "../../Validation/image.validation";
 import toast from "react-hot-toast";
+import CropModal from "../CropImage/CropImage";
+import ImageCropModal from "../CropImage/CropImage";
 
 // export default ParsedData
 export const UploadPhoto: React.FC<UploadComponentProps> = ({
@@ -13,26 +15,67 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
   const [backImage, setBackImage] = useState<any>(null);
   const [frontPreview, setFrontPreview] = useState("");
   const [backPreview, setBackPreview] = useState("");
+  const [cropModal, setCropModal] = useState<{
+    isOpen: boolean;
+    imageSrc: File | null;
+    side: string;
+  }>({
+    isOpen: false,
+    imageSrc: null,
+    side: "",
+  });
 
-  const setImage = (image: File, side: string) => {
-    const result = validateImage(image as File);
-    if (!result) return toast.error("Invalid Image Type");
-    if (image) {
-      if (side == "front") {
-        setFrontImage(image);
-        setFrontPreview(URL.createObjectURL(image));
-      } else {
-        setBackImage(image);
-        setBackPreview(URL.createObjectURL(image));
-      }
+  const openCropModal = (file: File, side: string) => {
+    const result = validateImage(file);
+    if (!result) {
+      toast.error("Invalid Image Type");
+      return;
+    }
+
+    setCropModal({
+      isOpen: true,
+      imageSrc: file,
+      side,
+    });
+  };
+
+  const handleCropComplete = (croppedImage: File) => {
+    if (cropModal.side === "front") {
+      setFrontImage(croppedImage);
+      setFrontPreview(URL.createObjectURL(croppedImage));
+    } else {
+      setBackImage(croppedImage);
+      setBackPreview(URL.createObjectURL(croppedImage));
     }
   };
+
+  const closeCropModal = () => {
+    setCropModal({
+      isOpen: false,
+      imageSrc: null,
+      side: "front",
+    });
+  };
+
+  //   const setImage = (image: File, side: string) => {
+  //     const result = validateImage(image as File);
+  //     if (!result) return toast.error("Invalid Image Type");
+  //     if (image) {
+  //       if (side == "front") {
+  //         setFrontImage(image);
+  //         setFrontPreview(URL.createObjectURL(image));
+  //       } else {
+  //         setBackImage(image);
+  //         setBackPreview(URL.createObjectURL(image));
+  //       }
+  //     }
+  //   };
 
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     const side = e.target.name;
     if (!file) return;
-    setImage(file, side);
+    openCropModal(file, side);
   };
 
   const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -43,7 +86,7 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
     if (!droppedFile) return;
-    setImage(droppedFile, side);
+    openCropModal(droppedFile, side);
   };
 
   const onReset = () => {
@@ -51,6 +94,10 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
     setFrontPreview("");
     setBackImage(null);
     setBackPreview("");
+  };
+
+  const extractImage = async () => {
+    await onProcess(frontImage, backImage);
   };
 
   const UploadArea: React.FC<{
@@ -147,7 +194,7 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
       {/* Action Buttons */}
       <div className="flex justify-center space-x-4">
         <button
-          onClick={onProcess}
+          onClick={extractImage}
           disabled={!frontPreview || !backPreview || isProcessing}
           className={`px-8 py-3 rounded-lg font-semibold transition-all ${
             frontPreview && backPreview && !isProcessing
@@ -172,6 +219,12 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
           Reset
         </button>
       </div>
+      <ImageCropModal
+        isOpen={cropModal.isOpen}
+        onClose={closeCropModal}
+        onSave={handleCropComplete}
+        imageFile={cropModal.imageSrc}
+      />
     </div>
   );
 };
