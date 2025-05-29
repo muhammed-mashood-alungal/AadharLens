@@ -1,6 +1,6 @@
 export interface AadharFrontSideDataTypes {
     name : string;
-    DOB :string;
+    dateOfBirth :string;
     gender : string;
     aadharNumber : string
 }

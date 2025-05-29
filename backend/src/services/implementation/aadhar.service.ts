@@ -36,9 +36,9 @@ export class AadharServices implements IAadharServices {
       );
     }
 
-    const { name, DOB, gender, aadharNumber } = fetchFrontSideData(frontLines);
+    const { name, dateOfBirth, gender, aadharNumber } = fetchFrontSideData(frontLines);
     const address = extractAddress(backLines);
 
-    return { name, DOB, gender, aadharNumber, address };
+    return { name, dateOfBirth, gender, aadharNumber, address };
   }
 }

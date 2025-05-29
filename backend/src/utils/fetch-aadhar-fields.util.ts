@@ -61,7 +61,8 @@ function extractAadharNumber(line: string) {
   const cleaned = line.replace(/\s+/g, "");
 
   if (cleaned.length == 12 && validateAadharNumber(cleaned)) {
-    return cleaned;
+    console.log('Adhaar is' + line , cleaned)
+    return line;
   }
   return "";
 }
@@ -94,7 +95,7 @@ export function extractAddress(lines: string[]) {
 export function fetchFrontSideData(lines: string[]): AadharFrontSideDataTypes {
   const frontSideData: AadharFrontSideDataTypes = {
     name: "",
-    DOB: "",
+    dateOfBirth: "",
     gender: "",
     aadharNumber: "",
   };
@@ -103,9 +104,9 @@ export function fetchFrontSideData(lines: string[]): AadharFrontSideDataTypes {
   if (!frontSideData.name) throw new Error(ResponsePhrases.INVALID_FILE_UPLOAD);
 
   for (let i = 0; i < lines.length; i++) {
-    if (!frontSideData.DOB) {
+    if (!frontSideData.dateOfBirth) {
       const dob = extractDOB(lines[i].trim());
-      if (dob) frontSideData.DOB = dob;
+      if (dob) frontSideData.dateOfBirth = dob;
     }
     if (!frontSideData.gender) {
       const gender = extractGender(lines[i].trim().toUpperCase());

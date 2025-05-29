@@ -5,42 +5,38 @@ import { CheckCircle, FileImage, Upload } from "lucide-react";
 import { ParsedDataComponent } from "../../Components/ParsedData/ParsedData";
 import { UploadPhoto } from "../../Components/UploadPhoto.tsx/UploadPhoto";
 import { AadharServices } from "../../Services/aadhar.service";
-
-// function LandingPage() {
-//   const [fronSideUrl, setFrontSideUrl] = useState("");
-//   return (
-//     <div className="flex w-[100vw] h-[100vh] bg-black ">
-//       <UploadPhoto
-//         backPreview={fronSideUrl}
-//         frontPreview={fronSideUrl}
-//         isProcessing={false}
-//         onBackUpload={()=>console.log('back')}
-//         onFrontUpload={()=>console.log('back')}
-//         onReset={()=>console.log('back')}
-//         onDragOver={()=>console.log('asdf')}
-//         onDrop={()=>console.log('asdfasdf')}
-//         onProcess={()=>console.log('adsfasdf')}
-//       />
-//     </div>
-//   );
-// }
-
-// export default LandingPage;
+import { useRef, useState } from "react";
+import type { ParsedData } from "../../Types/parsed-data.types";
+import toast from "react-hot-toast";
 
 const AadhaarProcessor: React.FC<any> = ({
-  extractedData,
-  isProcessing,
   showAadhaarNumber,
   onToggleAadhaarVisibility,
 }) => {
-  const onProcess =async (frontImage: File, backImage: File) => {
-    const formData = new FormData();
-    formData.append("frontImage", frontImage);
-    formData.append("backImage", backImage);
+  const [parsedData, setParsedData] = useState<ParsedData | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const parsedDataRef = useRef<HTMLDivElement>(null);
 
-    const data = await AadharServices.extractAdharData(formData)
-    console.log(data)
+  const handleScrollToParsedData = () => {
+    parsedDataRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const onProcess = async (frontImage: File, backImage: File) => {
+    try {
+      setProcessing(true);
+      const formData = new FormData();
+      formData.append("frontImage", frontImage);
+      formData.append("backImage", backImage);
+
+      const parsedData = await AadharServices.extractAdharData(formData);
+      setParsedData(parsedData);
+      setProcessing(false)
+      handleScrollToParsedData();
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Header */}
@@ -75,14 +71,21 @@ const AadhaarProcessor: React.FC<any> = ({
         </div>
 
         {/* Upload Component */}
-        <UploadPhoto isProcessing={isProcessing} onProcess={onProcess} />
+        <div>
+          <UploadPhoto
+            isProcessing={processing}
+            onProcess={onProcess}
+          />
+        </div>
 
         {/* Parsed Data Component */}
-        <ParsedDataComponent
-          extractedData={extractedData}
-          showAadhaarNumber={showAadhaarNumber}
-          onToggleAadhaarVisibility={onToggleAadhaarVisibility}
-        />
+        <div ref={parsedDataRef}>
+          <ParsedDataComponent
+            parsedData={parsedData}
+            showAadhaarNumber={showAadhaarNumber}
+            onToggleAadhaarVisibility={onToggleAadhaarVisibility}
+          />
+        </div>
 
         {/* Features Section */}
         <div className="mt-16 grid md:grid-cols-3 gap-8">

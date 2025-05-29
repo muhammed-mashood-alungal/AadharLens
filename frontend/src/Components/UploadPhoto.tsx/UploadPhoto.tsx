@@ -172,7 +172,7 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
   );
 
   return (
-    <div className="bg-white w-[50%] shadow-xl p-8 mb-8">
+    <div className="bg-white  shadow-xl p-8 mb-8">
       <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
         Upload Aadhaar Card Images
       </h3>

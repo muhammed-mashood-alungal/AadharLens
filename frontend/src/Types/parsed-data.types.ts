@@ -1,16 +1,15 @@
-export interface ExtractedData {
+export interface ParsedData {
   name: string;
-  aadhaarNumber: string;
+  aadharNumber: string;
   dateOfBirth: string;
   gender: string;
   address: string;
-  fatherName: string;
-  mobileNumber: string;
-  email: string;
+  //fatherName: string;
+  //mobileNumber: string;
 }
 
 export interface ParsedDataComponentProps {
-  extractedData: ExtractedData | null;
+  parsedData: ParsedData | null;
   showAadhaarNumber: boolean;
   onToggleAadhaarVisibility: () => void;
 }
