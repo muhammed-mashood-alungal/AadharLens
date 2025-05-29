@@ -3,7 +3,6 @@ import type { UploadComponentProps } from "../../Types/upload-image.types";
 import { useState } from "react";
 import { validateImage } from "../../Validation/image.validation";
 import toast from "react-hot-toast";
-import CropModal from "../CropImage/CropImage";
 import ImageCropModal from "../CropImage/CropImage";
 
 // export default ParsedData

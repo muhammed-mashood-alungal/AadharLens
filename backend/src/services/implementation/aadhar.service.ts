@@ -1,14 +1,44 @@
+import { ResponsePhrases } from "../../constants/http-response.contants";
+import { HttpStatus } from "../../constants/http-status.constants";
+import { AadharParsedData } from "../../types/aadhar/aadhar.types";
+import {
+  extractAddress,
+  fetchFrontSideData,
+} from "../../utils/fetch-aadhar-fields.util";
 import { fetchTexts } from "../../utils/fetch-texts.util";
+import { createHttpError } from "../../utils/http-error.util";
 import { IAadharServices } from "../interface/aadhar.service.interface";
 
 export class AadharServices implements IAadharServices {
-  async parseData(frontImg: Buffer, backImg: Buffer): Promise<any> {
-    const textInFrontSide = fetchTexts(frontImg);
-    const textInBackSide = fetchTexts(backImg);
-    console.log("Front +++++++++++++++++++++");
-    console.log(textInFrontSide);
-    console.log("Back +++++++++++++++++++++++");
-    console.log(textInBackSide);
-    //// logics ....
+  async parseData(frontImg: Buffer, backImg: Buffer): Promise<AadharParsedData> {
+    const textInFrontSide = await fetchTexts(frontImg);
+    const textInBackSide = await fetchTexts(backImg);
+
+    const frontLines = textInFrontSide
+      ?.split("\n")
+      .map((v) => v.trim())
+      .filter(Boolean);
+    const backLines = textInBackSide
+      ?.split("\n")
+      .map((v) => v.trim())
+      .filter(Boolean);
+
+    if (!frontLines) {
+      throw createHttpError(
+        HttpStatus.BAD_REQUEST,
+        ResponsePhrases.FAILED_TO_FETCH_DETAILS
+      );
+    }
+    if (!backLines) {
+      throw createHttpError(
+        HttpStatus.BAD_REQUEST,
+        ResponsePhrases.FAILED_TO_FETCH_DETAILS
+      );
+    }
+
+    const { name, DOB, gender, aadharNumber } = fetchFrontSideData(frontLines);
+    const address = extractAddress(backLines);
+
+    return { name, DOB, gender, aadharNumber, address };
   }
 }

@@ -17,7 +17,6 @@ export class AadharController implements IAadharController {
         req.frontImageBuffer as Buffer,
         req.backImageBuffer as Buffer
       );
-      console.log(data)
       res.status(HttpStatus.OK).json({ success: true, parsedData: data });
     } catch (error) {
       next(error);
