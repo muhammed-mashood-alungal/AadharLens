@@ -1,4 +1,3 @@
-import { ResponsePhrases } from "../constants/http-response.contants";
 import { AadharFrontSideDataTypes } from "../types/aadhar/aadhar.types";
 import validateAadharNumber from "./validate-aadhar-number.util";
 
@@ -30,18 +29,18 @@ function extractName(lines: string[]) {
 
 function extractDOB(line: string): string {
   const dobRegexes = [
-    /\b(\d{2})[-/.](\d{2})[-/.](\d{2,4})\b/, // 12-12-1995 or 12/12/95
-    /\b(\d{4})[-/.](\d{2})[-/.](\d{2})\b/, // 1995-12-12
-    /\b(\d{4})\b/, // Year only (YOB)
+    /\b(\d{2})[-/.](\d{2})[-/.](\d{2,4})\b/,
+    /\b(\d{4})[-/.](\d{2})[-/.](\d{2})\b/,
+    /\b(\d{4})\b/,
   ];
 
   for (const regex of dobRegexes) {
     const match = line.match(regex);
     if (match) {
       let [_, p1, p2, p3] = match;
-      if (p1.length === 4) return `${p1}-${p2}-${p3}`; // Already YYYY-MM-DD
-      if (p3.length === 4) return `${p3}-${p2}-${p1}`; // Convert DD-MM-YYYY → YYYY-MM-DD
-      if (p3.length === 2) return `20${p3}-${p2}-${p1}`; // e.g., 12-12-25 → 2025-12-12
+      if (p1.length === 4) return `${p1}-${p2}-${p3}`;
+      if (p3.length === 4) return `${p3}-${p2}-${p1}`;
+      if (p3.length === 2) return `20${p3}-${p2}-${p1}`;
     }
   }
   return "";
@@ -61,7 +60,6 @@ function extractAadharNumber(line: string) {
   const cleaned = line.replace(/\s+/g, "");
 
   if (cleaned.length == 12 && validateAadharNumber(cleaned)) {
-    console.log('Adhaar is' + line , cleaned)
     return line;
   }
   return "";
@@ -78,18 +76,18 @@ export function extractAddress(lines: string[]) {
         const current = lines[j].trim();
         if (
           /^\d{4}\s\d{4}\s\d{4}$/.test(current) ||
-          current.includes("@") || 
-          current.includes("WWW.") || 
+          current.includes("@") ||
+          current.includes("WWW.") ||
           /^[0-9]{4}$/.test(current)
         ) {
           break;
         }
-         addressLines.push(current);
+        addressLines.push(current);
       }
-     break;
+      break;
     }
   }
-   return addressLines.join(' ')
+  return addressLines.join(" ");
 }
 
 export function fetchFrontSideData(lines: string[]): AadharFrontSideDataTypes {
@@ -101,7 +99,6 @@ export function fetchFrontSideData(lines: string[]): AadharFrontSideDataTypes {
   };
 
   frontSideData.name = extractName(lines);
-  if (!frontSideData.name) throw new Error(ResponsePhrases.INVALID_FILE_UPLOAD);
 
   for (let i = 0; i < lines.length; i++) {
     if (!frontSideData.dateOfBirth) {

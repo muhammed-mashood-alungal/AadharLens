@@ -1,7 +1,7 @@
 // import { useState } from "react";
 // import { UploadPhoto } from "../../Components/UploadPhoto.tsx/UploadPhoto";
 
-import { CheckCircle, FileImage, Upload } from "lucide-react";
+import { CheckCircle, Eye, FileImage, Upload } from "lucide-react";
 import { ParsedDataComponent } from "../../Components/ParsedData/ParsedData";
 import { UploadPhoto } from "../../Components/UploadPhoto.tsx/UploadPhoto";
 import { AadharServices } from "../../Services/aadhar.service";
@@ -30,10 +30,12 @@ const AadhaarProcessor: React.FC<any> = ({
 
       const parsedData = await AadharServices.extractAdharData(formData);
       setParsedData(parsedData);
-      setProcessing(false)
+      
       handleScrollToParsedData();
     } catch (error: unknown) {
       toast.error((error as Error).message);
+    }finally{
+      setProcessing(false)
     }
   };
 
@@ -44,11 +46,11 @@ const AadhaarProcessor: React.FC<any> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center space-x-3">
             <div className="bg-blue-600 p-2 rounded-lg">
-              <FileImage className="w-6 h-6 text-white" />
+              <Eye className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Aadhaar Card Processor
+                Aadhaar Lens
               </h1>
               <p className="text-gray-600">
                 Extract information from Aadhaar cards instantly

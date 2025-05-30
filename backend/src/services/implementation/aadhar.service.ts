@@ -10,7 +10,10 @@ import { createHttpError } from "../../utils/http-error.util";
 import { IAadharServices } from "../interface/aadhar.service.interface";
 
 export class AadharServices implements IAadharServices {
-  async parseData(frontImg: Buffer, backImg: Buffer): Promise<AadharParsedData> {
+  async parseData(
+    frontImg: Buffer,
+    backImg: Buffer
+  ): Promise<AadharParsedData> {
     const textInFrontSide = await fetchTexts(frontImg);
     const textInBackSide = await fetchTexts(backImg);
 
@@ -26,19 +29,34 @@ export class AadharServices implements IAadharServices {
     if (!frontLines) {
       throw createHttpError(
         HttpStatus.BAD_REQUEST,
-        ResponsePhrases.FAILED_TO_FETCH_DETAILS
+        ResponsePhrases.FRONT_SIDE_NOT_CLEAR
       );
     }
     if (!backLines) {
       throw createHttpError(
         HttpStatus.BAD_REQUEST,
-        ResponsePhrases.FAILED_TO_FETCH_DETAILS
+        ResponsePhrases.BACK_SIDE_NOT_CLEAR
       );
     }
 
-    const { name, dateOfBirth, gender, aadharNumber } = fetchFrontSideData(frontLines);
-    const address = extractAddress(backLines);
+    const { name, dateOfBirth, gender, aadharNumber } =
+      fetchFrontSideData(frontLines);
 
+    if (!name || !dateOfBirth || !gender || !aadharNumber) {
+      throw createHttpError(
+        HttpStatus.BAD_REQUEST,
+        ResponsePhrases.FRONT_SIDE_EXTRACT_FAILED
+      );
+    }
+
+
+    const address = extractAddress(backLines);
+    if (!address) {
+      throw createHttpError(
+        HttpStatus.BAD_REQUEST,
+        ResponsePhrases.BACK_SIDE_EXTRACT_FAILED
+      );
+    }
     return { name, dateOfBirth, gender, aadharNumber, address };
   }
 }

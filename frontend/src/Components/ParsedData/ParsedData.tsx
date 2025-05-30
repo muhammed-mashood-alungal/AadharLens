@@ -5,7 +5,6 @@ import {
   EyeOff,
   Hash,
   MapPin,
-  Phone,
   User,
 } from "lucide-react";
 import type {
