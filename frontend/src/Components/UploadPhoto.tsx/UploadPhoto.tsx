@@ -25,9 +25,9 @@ export const UploadPhoto: React.FC<UploadComponentProps> = ({
   });
 
   const openCropModal = (file: File, side: string) => {
-    const result = validateImage(file);
-    if (!result) {
-      toast.error("Invalid Image Type");
+    const {status , message} = validateImage(file);
+    if (!status ) {
+      toast.error(message as string);
       return;
     }
 

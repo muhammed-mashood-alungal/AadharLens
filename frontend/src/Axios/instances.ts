@@ -1,5 +1,6 @@
 import axios from "axios";
-
+const API_BASE = import.meta.env.VITE_BACKEND_URL!
+console.log(API_BASE)
 export const aadharInstance = axios.create({
-    baseURL : `${import.meta.env.VITE_BACKEND_URL}/api/aadhar/`
+    baseURL : `${API_BASE}/api/aadhar/`
 })

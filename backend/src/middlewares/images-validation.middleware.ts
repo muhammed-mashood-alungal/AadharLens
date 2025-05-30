@@ -26,7 +26,7 @@ export const validateImages = (
   ) {
     const allowedExtensions = ["png", "jpeg", "jpg"];
     const allowedMimeTypes = ["image/png", "image/jpeg", "image/jpg"];
-    const maxFileSizeinMB = 2;
+    const maxFileSizeinMB = 5;
 
     for (let image of [files.frontImage[0], files.backImage[0]]) {
       const ext = image?.originalname.split(".").pop();

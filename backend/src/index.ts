@@ -5,9 +5,12 @@ import { errorHandler } from "./middlewares/error.middleware";
 import cors from "cors";
 const app = express();
 
+const CLIENT_ORIGIN = env.CLIENT_ORIGIN!;
+console.log('client '+CLIENT_ORIGIN)
+
 app.use(
   cors({
-    origin: env.CLIENT_ORIGIN,
+    origin: CLIENT_ORIGIN,
   })
 );
 
